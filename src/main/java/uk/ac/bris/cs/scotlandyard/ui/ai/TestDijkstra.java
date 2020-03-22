@@ -3,9 +3,13 @@ import com.google.common.graph.*;
 import uk.ac.bris.cs.scotlandyard.model.ScotlandYard;
 import uk.ac.bris.cs.scotlandyard.ui.ai.OurDijkstra;
 
+/** RUN => EDIT CONFIGURATIONS => VM OPTIONS insert " -ea  " */
+/** NOW ASSERTS WILL WORK */
+
 class TestDijkstra
 {
     private static void testing (int[] x, int[] y, int size) {
+
         for (int i = 0; i <= size; ++i)
             assert x[i] == y[i] : "AI GRESIT PATROANE";
     }
