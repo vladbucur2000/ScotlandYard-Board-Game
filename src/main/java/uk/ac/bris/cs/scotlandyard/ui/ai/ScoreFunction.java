@@ -2,21 +2,20 @@ package uk.ac.bris.cs.scotlandyard.ui.ai;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.graph.EndpointPair;
-import com.google.common.graph.Graph;
+
 import com.google.common.graph.ImmutableValueGraph;
-import uk.ac.bris.cs.scotlandyard.ui.ai.PlayerInfo;
 import uk.ac.bris.cs.scotlandyard.model.ScotlandYard;
 import java.util.*;
 
 public class ScoreFunction {
 
-    public int scorer(ImmutableValueGraph < Integer , ImmutableSet<ScotlandYard.Transport>> graph , List<PlayerInfo> players, int location){
-        private int stationScore = 0;
-        private int detectiveScore = 0;
-        private int score = 0;
+    public int scorer(ImmutableValueGraph < Integer , ImmutableSet<ScotlandYard.Transport>> graph, List<PlayerInfo> players, int location) {
+        int stationScore = 0;
+        int detectiveScore = 0;
+        int score = 0;
         PlayerInfo mrX = players.get(0);
 
-        /** 1 VARIABLE */
+        /** 1st VARIABLE */
 
         for (EndpointPair<Integer> incidentEdge : graph.incidentEdges(location)) {
 
@@ -33,7 +32,7 @@ public class ScoreFunction {
             }
         }
 
-        /** 2 VARIABLE */
+        /** 2nd VARIABLE */
 
         OurDijkstra dijkstra = new OurDijkstra();
         int[] distances = dijkstra.compute(graph, location);
@@ -41,11 +40,14 @@ public class ScoreFunction {
         for (PlayerInfo player : players) {
             if (player == mrX) continue;
 
-            int detectiveScore = 1000;
-            if (distances[player.getLocation()] < player.getEquivalenceTAXI()) detectiveScore = distances[player.getLocation()] / player.totalTickets();
-
+            int movementRatio = 1000;
+            if (distances[player.getLocation()] < player.getEquivalenceTAXI()) movementRatio = distances[player.getLocation()] / player.totalTickets();
+            detectiveScore += movementRatio;
         }
 
+        score = stationScore + detectiveScore / (players.size() - 1);
+
+        return score;
 
     }
 }

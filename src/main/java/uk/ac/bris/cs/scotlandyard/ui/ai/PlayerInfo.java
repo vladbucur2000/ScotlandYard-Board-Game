@@ -36,9 +36,9 @@ public class PlayerInfo {
             Integer noTickets = element.getValue();
 
             switch (ticket) {
-                case TAXI: score += 1;
-                case BUS: score += 4;
-                case UNDERGROUND: score += 18;
+                case TAXI: score += noTickets;
+                case BUS: score += (4 * noTickets);
+                case UNDERGROUND: score += (18 * noTickets);
                 default : break;
             }
         }
@@ -47,7 +47,7 @@ public class PlayerInfo {
     }
 
     public int totalTickets() {
-        int ans;
+        int ans = 0;
         for (Map.Entry<ScotlandYard.Ticket, Integer> element : tickets.entrySet()) {
             Integer noTickets = element.getValue();
             ans += noTickets;
