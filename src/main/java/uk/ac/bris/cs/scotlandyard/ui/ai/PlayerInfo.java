@@ -29,9 +29,31 @@ public class PlayerInfo {
         if( tickets.get(ticket) == 0 ) return false;
         return true;
     }
-    public int  getEquivalenceTAXI(){
-        for(var i : )
-        return i;
+    public int getEquivalenceTAXI(){
+        int score = 0;
+        for(Map.Entry<ScotlandYard.Ticket, Integer> element : tickets.entrySet()) {
+            ScotlandYard.Ticket ticket = element.getKey();
+            Integer noTickets = element.getValue();
+
+            switch (ticket) {
+                case TAXI: score += 1;
+                case BUS: score += 4;
+                case UNDERGROUND: score += 18;
+                default : break;
+            }
+        }
+
+        return score;
+    }
+
+    public int totalTickets() {
+        int ans;
+        for (Map.Entry<ScotlandYard.Ticket, Integer> element : tickets.entrySet()) {
+            Integer noTickets = element.getValue();
+            ans += noTickets;
+        }
+
+        return ans;
     }
 
 }

@@ -36,9 +36,15 @@ public class ScoreFunction {
         /** 2 VARIABLE */
 
         OurDijkstra dijkstra = new OurDijkstra();
-        int[] distances = dijkstra.compute(graph,location);
+        int[] distances = dijkstra.compute(graph, location);
 
-        /** ECHIVALARE
+        for (PlayerInfo player : players) {
+            if (player == mrX) continue;
+
+            int detectiveScore = 1000;
+            if (distances[player.getLocation()] < player.getEquivalenceTAXI()) detectiveScore = distances[player.getLocation()] / player.totalTickets();
+
+        }
 
 
     }
