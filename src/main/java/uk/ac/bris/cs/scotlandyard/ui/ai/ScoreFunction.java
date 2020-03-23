@@ -16,24 +16,6 @@ public class ScoreFunction {
         PlayerInfo mrX = players.get(0);
 
         /** 1st VARIABLE */
-
-        for (EndpointPair<Integer> incidentEdge : graph.incidentEdges(location)) {
-
-            for(var i : graph.edgeValueOrDefault(incidentEdge,null)) {
-                if (mrX.hasTicket(i.requiredTicket())) {
-                    switch (i) {
-                        case TAXI: stationScore += 1;
-                        case BUS:  stationScore += 4;
-                        case UNDERGROUND: stationScore += 18;
-                        case FERRY: stationScore += 115;
-                        default: throw new NullPointerException("Ticket is null");
-                    }
-                }
-            }
-        }
-
-        /** 2nd VARIABLE */
-
         OurDijkstra dijkstra = new OurDijkstra();
         int[] distances = dijkstra.compute(graph, location);
 
@@ -45,8 +27,28 @@ public class ScoreFunction {
             detectiveScore += movementRatio;
         }
 
-        score = stationScore + detectiveScore / (players.size() - 1);
 
+        /** 2nd VARIABLE */
+
+        for (EndpointPair<Integer> incidentEdge : graph.incidentEdges(location))
+            for (var i : graph.edgeValueOrDefault(incidentEdge, null))
+                if (mrX.hasTicket(i.requiredTicket()) || mrX.hasTicket(ScotlandYard.Ticket.SECRET)) switch (i) {
+                    case TAXI:
+                        stationScore += 1;
+                    case BUS:
+                        stationScore += 4;
+                    case UNDERGROUND:
+                        stationScore += 18;
+                    case FERRY:
+                        stationScore += 115;
+                    default:
+                        throw new NullPointerException("Ticket is null");
+                }
+
+
+        ////////////////////////////////////////////
+        score = stationScore + detectiveScore / (players.size() - 1);
+///////////////////////////////////////////////////////
         return score;
 
     }

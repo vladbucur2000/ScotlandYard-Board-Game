@@ -19,12 +19,15 @@ public class PlayerInfo {
     public Piece getPiece() {
         return colour;
     }
+
     public int getLocation() {
         return location;
     }
+
     public Map<ScotlandYard.Ticket, Integer> getTickets() {
         return tickets;
     }
+
     public Boolean hasTicket(ScotlandYard.Ticket ticket) {
         if( tickets.get(ticket) == 0 ) return false;
         return true;
