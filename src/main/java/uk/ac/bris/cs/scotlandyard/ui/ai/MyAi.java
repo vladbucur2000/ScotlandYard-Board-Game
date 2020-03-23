@@ -16,6 +16,12 @@ public class MyAi implements Ai {
 	@Nonnull @Override public Move pickMove(
 			@Nonnull Board board,
 			@Nonnull AtomicBoolean terminate) {
+
+
+
+
+		//ScoreFunction scoreFunction = new ScoreFunction();
+		//scoreFunction.scorer();
 		// returns a random move, replace with your own implementation
 		var moves = board.getAvailableMoves().asList();
 		return moves.get(new Random().nextInt(moves.size()));
