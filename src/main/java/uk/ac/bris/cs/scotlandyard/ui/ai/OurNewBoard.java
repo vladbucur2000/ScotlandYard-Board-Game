@@ -5,12 +5,11 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.graph.ImmutableValueGraph;
 import uk.ac.bris.cs.scotlandyard.model.*;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 
 public class OurNewBoard {
 
-    private List <PlayerInfo> players;
+    public List <PlayerInfo> players;
     PlayerInfo mrX;
     ImmutableValueGraph<Integer, ImmutableSet<ScotlandYard.Transport>> graph;
     private GameSetup setup;
@@ -22,8 +21,8 @@ public class OurNewBoard {
         this.setup = setup;
     }
 
-    Set<Move> getAvailableMoves() {
-        Set<Move> set = new HashSet<>();
+    public Set<Move.SingleMove> getAvailableMoves() {
+        Set<Move.SingleMove> set = new HashSet<>();
 
         set.addAll(makeSingleMoves(setup, mrX, players));
         return set;

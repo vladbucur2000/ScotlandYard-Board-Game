@@ -10,9 +10,12 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import javax.swing.*;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.common.graph.ImmutableValueGraph;
 import uk.ac.bris.cs.scotlandyard.model.*;
 
 public class MyAi implements Ai {
+	public static ScoreFunction sc = new ScoreFunction();
 
 	@Nonnull @Override public String name() { return "theCrane"; }
 
@@ -20,21 +23,15 @@ public class MyAi implements Ai {
 			@Nonnull Board board,
 			@Nonnull AtomicBoolean terminate) {
 
-		//??trebuie sa facem o lista cu tichetele fiecarui jucator
-		//board.getPlayerTickets(CULOARE);
-
-		int cnt = 0;
 		PlayerInfo mrX = null;
 		var moves = board.getAvailableMoves().asList();
-		int initialLocation = moves.iterator().next().source();
+		int initialLocationMRX = moves.iterator().next().source();
 
 		List<PlayerInfo> detectives = new ArrayList<>();
-		int c=0;
-		//System.out.println(board.getDetectiveLocation(Piece.Detective.RED).get());
 		for (Piece player : board.getPlayers()) {
-			c++;
+
 			if (player.isMrX()) {
-				mrX = new PlayerInfo(board.getPlayerTickets(player).get(), player, initialLocation);
+				mrX = new PlayerInfo(board.getPlayerTickets(player).get(), player, initialLocationMRX);
 				continue;
 			}
 			switch (player.webColour()) {
@@ -51,24 +48,63 @@ public class MyAi implements Ai {
 			}
 		}
 
-
-		for(var i : detectives){
-			System.out.println ( i.getPiece() + "..echivaltena: " + i.getEquivalenceTAXI() +"..locatie:" + i.getLocation());
-		}
-
-		System.out.println("--------------------------------------------- HATZZZZZ MOBILAAAA------");
-		try {
-			TimeUnit.SECONDS.sleep(100);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
-
+	    List<PlayerInfo> init = new ArrayList<>();
+		init.add(mrX);
+		init.addAll(detectives);
+		OurNewBoard newBoard = new OurNewBoard(init,board.getSetup());
+		Move bestMove = null;
+		int bestMoveScore = minimaxAlphaBeta(5,true,newBoard,mrX,detectives,board);
 		//ScoreFunction scoreFunction = new ScoreFunction();
 		//scoreFunction.scorer();
 		// returns a random move, replace with your own implementation
+		System.out.println(bestMoveScore);
 
 		return moves.get(new Random().nextInt(moves.size()));
 	}
 
+
+
+	static int minimaxAlphaBeta(int depth, boolean maximize, OurNewBoard ourBoard, PlayerInfo mrX, List<PlayerInfo> detectives, Board board) {
+
+		if (depth == 5){
+			return sc.scorer(board.getSetup().graph,ourBoard.players,mrX.getLocation());
+		}
+
+		if(maximize){
+			int v = Integer.MIN_VALUE;
+			for (Move.SingleMove nextMove : ourBoard.getAvailableMoves()){
+				PlayerInfo newMrX = new PlayerInfo(mrX.giveTicketBoard(),mrX.getPiece(),mrX.getLocation());
+
+				newMrX.changeLocation(nextMove.destination);
+				newMrX.modifyTickets(nextMove.ticket,-1);
+
+				List<PlayerInfo> init = new ArrayList<>();
+				init.add(newMrX);
+				init.addAll(detectives);
+
+				OurNewBoard newBoard = new OurNewBoard(init,board.getSetup());
+				v = Math.max(v,minimaxAlphaBeta(depth+1,false,newBoard,newMrX,detectives,board));
+			}
+			return v;
+		}
+
+		else{
+			int v = Integer.MAX_VALUE;
+			for (Move.SingleMove nextMove : ourBoard.getAvailableMoves()){
+				PlayerInfo newMrX = new PlayerInfo(mrX.giveTicketBoard(),mrX.getPiece(),mrX.getLocation());
+
+				newMrX.changeLocation(nextMove.destination);
+				newMrX.modifyTickets(nextMove.ticket,-1);
+
+				List<PlayerInfo> init = new ArrayList<>();
+				init.add(newMrX);
+				init.addAll(detectives);
+
+				OurNewBoard newBoard = new OurNewBoard(init,board.getSetup());
+				v = Math.min(v,minimaxAlphaBeta(depth+1,true,newBoard,newMrX,detectives,board));
+			}
+			return v;
+		}
+
+	}
 }

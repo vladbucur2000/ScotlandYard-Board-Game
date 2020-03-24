@@ -42,7 +42,7 @@ public class ScoreFunction {
                     case FERRY:
                         stationScore += 115;
                     default:
-                        throw new NullPointerException("Ticket is null");
+                        stationScore += 0;
                 }
 
 

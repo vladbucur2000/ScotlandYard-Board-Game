@@ -8,10 +8,12 @@ import java.util.*;
 
 public class PlayerInfo {
     private Map<ScotlandYard.Ticket, Integer> tickets;
+    private Board.TicketBoard ticketBoards;
     private final Piece colour;
     private int location;
 
     public PlayerInfo (Board.TicketBoard tickets, Piece colour, int location ) {
+        this.ticketBoards = tickets;
         Map<ScotlandYard.Ticket, Integer> hm = new HashMap<ScotlandYard.Ticket, Integer>();
         hm.put(ScotlandYard.Ticket.TAXI , tickets.getCount(ScotlandYard.Ticket.TAXI));
         hm.put(ScotlandYard.Ticket.BUS , tickets.getCount(ScotlandYard.Ticket.BUS));
@@ -23,16 +25,33 @@ public class PlayerInfo {
         this.location = location;
     }
 
+    public PlayerInfo clone(){
+        return new PlayerInfo( this.ticketBoards, this.colour, this.location);
+    }
+
+
+
     public Piece getPiece() {
         return colour;
+    }
+
+    public Board.TicketBoard giveTicketBoard(){
+        return ticketBoards;
     }
 
     public int getLocation() {
         return location;
     }
 
+    public void changeLocation(int location) {
+        this.location = location;
+    }
     public Map<ScotlandYard.Ticket, Integer> getTickets() {
         return tickets;
+    }
+    public void modifyTickets(ScotlandYard.Ticket t, int x){
+        int number = tickets.remove(t);
+        tickets.put(t,number + x);
     }
 
     public Boolean hasTicket(ScotlandYard.Ticket ticket) {
