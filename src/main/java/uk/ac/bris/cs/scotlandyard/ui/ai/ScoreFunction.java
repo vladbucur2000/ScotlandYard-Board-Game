@@ -49,6 +49,7 @@ public class ScoreFunction {
         ////////////////////////////////////////////
         score = stationScore + detectiveScore / (players.size() - 1);
 ///////////////////////////////////////////////////////
+
         return score;
 
     }
