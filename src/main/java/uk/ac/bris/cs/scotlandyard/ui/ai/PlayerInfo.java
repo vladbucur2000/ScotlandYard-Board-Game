@@ -1,5 +1,6 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai;
 
+import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.model.Piece;
 import uk.ac.bris.cs.scotlandyard.model.ScotlandYard;
 import java.util.*;
@@ -10,8 +11,14 @@ public class PlayerInfo {
     private final Piece colour;
     private int location;
 
-    public PlayerInfo (Map<ScotlandYard.Ticket, Integer> tickets,Piece colour, int location ) {
-        this.tickets  = new HashMap<>(tickets);
+    public PlayerInfo (Board.TicketBoard tickets, Piece colour, int location ) {
+        Map<ScotlandYard.Ticket, Integer> hm = new HashMap<ScotlandYard.Ticket, Integer>();
+        hm.put(ScotlandYard.Ticket.TAXI , tickets.getCount(ScotlandYard.Ticket.TAXI));
+        hm.put(ScotlandYard.Ticket.BUS , tickets.getCount(ScotlandYard.Ticket.BUS));
+        hm.put(ScotlandYard.Ticket.UNDERGROUND , tickets.getCount(ScotlandYard.Ticket.UNDERGROUND));
+        hm.put(ScotlandYard.Ticket.SECRET , tickets.getCount(ScotlandYard.Ticket.SECRET));
+        hm.put(ScotlandYard.Ticket.DOUBLE , tickets.getCount(ScotlandYard.Ticket.DOUBLE));
+        this.tickets = hm;
         this.colour   = colour;
         this.location = location;
     }
