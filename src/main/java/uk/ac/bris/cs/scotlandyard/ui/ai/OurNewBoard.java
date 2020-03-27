@@ -21,17 +21,18 @@ public class OurNewBoard {
         this.setup = setup;
     }
 
-    public Set<Move.SingleMove> getAvailableMoves() {
-        Set<Move.SingleMove> set = new HashSet<>();
+    public Set<Move> getAvailableMoves() {
+        Set<Move> set = new HashSet<>();
 
         set.addAll(makeSingleMoves(setup, mrX, players));
+        if (mrX.hasTicket(ScotlandYard.Ticket.DOUBLE)) set.addAll(makeDoubleMove(setup, mrX, players)); //bugs
+
         return set;
-       // if (mrX.hasTicket(ScotlandYard.Ticket.DOUBLE)) set.addAll(makeDoubleMove()); //bugs
     }
 
 
 
-    static Set<Move.SingleMove> makeSingleMoves(GameSetup setup, PlayerInfo mrX, List <PlayerInfo> players) {
+    private static Set<Move.SingleMove> makeSingleMoves(GameSetup setup, PlayerInfo mrX, List <PlayerInfo> players) {
         Set<Move.SingleMove> singleMoves = new HashSet<>(); //a set with all possible single moves
 
         for (int destination : setup.graph.adjacentNodes(mrX.getLocation())) {
@@ -58,5 +59,26 @@ public class OurNewBoard {
         }
         return singleMoves;
 
+    }
+
+    private static Set<Move.DoubleMove> makeDoubleMove (GameSetup setup, PlayerInfo mrX, List <PlayerInfo> players)  {
+
+        Set<Move.SingleMove> a = makeSingleMoves(setup, mrX, players); //a set with the possible first moves
+        Set<Move.DoubleMove> doubleMoves = new HashSet<>(); //a set with all the possible double moves
+
+        for (Move.SingleMove mov : a) {
+            //all the possible second moves using the initial first moves
+            Set<Move.SingleMove> b = makeSingleMoves(setup, mrX, players);
+
+
+            for (Move.SingleMove mov2 : b) {
+                if (mov2.ticket == mov.ticket && !mrX.hasAtLeast2(mov.ticket)) continue;
+                Move.DoubleMove ticket = new Move.DoubleMove(mrX.getPiece(), mrX.getLocation(), mov.ticket, mov.destination, mov2.ticket, mov2.destination);
+                doubleMoves.add(ticket);
+            }
+
+        }
+
+        return doubleMoves;
     }
 }

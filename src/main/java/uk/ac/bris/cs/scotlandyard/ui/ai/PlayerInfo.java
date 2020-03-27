@@ -49,15 +49,23 @@ public class PlayerInfo {
     public Map<ScotlandYard.Ticket, Integer> getTickets() {
         return tickets;
     }
-    public void modifyTickets(ScotlandYard.Ticket t, int x){
-        int number = tickets.remove(t);
-        tickets.put(t,number + x);
+    public void modifyTickets(Iterable<ScotlandYard.Ticket> t, int x){
+        for (ScotlandYard.Ticket ticket : t) {
+            int number = tickets.remove(ticket);
+            tickets.put(ticket, number + x);
+        }
     }
 
     public Boolean hasTicket(ScotlandYard.Ticket ticket) {
         if( tickets.get(ticket) == 0 ) return false;
         return true;
     }
+
+    public boolean hasAtLeast2 (ScotlandYard.Ticket ticket) {
+        if (tickets.get(ticket) >= 2) return true;
+        return false;
+    }
+
     public int getEquivalenceTAXI(){
         int score = 0;
         for(Map.Entry<ScotlandYard.Ticket, Integer> element : tickets.entrySet()) {
