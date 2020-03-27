@@ -16,7 +16,8 @@ import uk.ac.bris.cs.scotlandyard.model.*;
 
 public class MyAi implements Ai {
 	public static ScoreFunction sc = new ScoreFunction();
-
+	public static Move.SingleMove bestMoveuleanu = null;
+	public static int currentScore = 0;
 	@Nonnull @Override public String name() { return "theCrane"; }
 
 	@Nonnull @Override public Move pickMove(
@@ -53,21 +54,23 @@ public class MyAi implements Ai {
 		init.addAll(detectives);
 		OurNewBoard newBoard = new OurNewBoard(init,board.getSetup());
 		Move bestMove = null;
-		int bestMoveScore = minimaxAlphaBeta(5,true,newBoard,mrX,detectives,board);
+		int bestMoveScore = minimaxAlphaBeta(0,true,newBoard,mrX,detectives,board,Integer.MIN_VALUE,Integer.MAX_VALUE);
 		//ScoreFunction scoreFunction = new ScoreFunction();
 		//scoreFunction.scorer();
 		// returns a random move, replace with your own implementation
-		System.out.println(bestMoveScore);
-
-		return moves.get(new Random().nextInt(moves.size()));
+		System.out.println("CEL MAI TARE DIN PARCARE : " +bestMoveScore);
+		return bestMoveuleanu;
+		//return moves.get(new Random().nextInt(moves.size()));
 	}
 
 
 
-	static int minimaxAlphaBeta(int depth, boolean maximize, OurNewBoard ourBoard, PlayerInfo mrX, List<PlayerInfo> detectives, Board board) {
+	static int minimaxAlphaBeta(int depth, boolean maximize, OurNewBoard ourBoard, PlayerInfo mrX, List<PlayerInfo> detectives, Board board,int alpha, int beta) {
 
 		if (depth == 5){
-			return sc.scorer(board.getSetup().graph,ourBoard.players,mrX.getLocation());
+			int scorulina = sc.scorer(board.getSetup().graph,ourBoard.players,mrX.getLocation());
+			System.out.println(scorulina);
+			return scorulina;
 		}
 
 		if(maximize){
@@ -83,16 +86,23 @@ public class MyAi implements Ai {
 				init.addAll(detectives);
 
 				OurNewBoard newBoard = new OurNewBoard(init,board.getSetup());
-				v = Math.max(v,minimaxAlphaBeta(depth+1,false,newBoard,newMrX,detectives,board));
+
+				currentScore = minimaxAlphaBeta(depth+1,false,newBoard,newMrX,detectives,board,alpha,beta);
+
+				if(currentScore > alpha){
+					alpha = currentScore;
+					bestMoveuleanu = nextMove;
+				}
+				if(beta <= alpha) break;
 			}
-			return v;
+
+			return currentScore;
 		}
 
 		else{
 			int v = Integer.MAX_VALUE;
 			for (Move.SingleMove nextMove : ourBoard.getAvailableMoves()){
 				PlayerInfo newMrX = new PlayerInfo(mrX.giveTicketBoard(),mrX.getPiece(),mrX.getLocation());
-
 				newMrX.changeLocation(nextMove.destination);
 				newMrX.modifyTickets(nextMove.ticket,-1);
 
@@ -101,10 +111,16 @@ public class MyAi implements Ai {
 				init.addAll(detectives);
 
 				OurNewBoard newBoard = new OurNewBoard(init,board.getSetup());
-				v = Math.min(v,minimaxAlphaBeta(depth+1,true,newBoard,newMrX,detectives,board));
+				currentScore = minimaxAlphaBeta(depth+1,false,newBoard,newMrX,detectives,board,alpha,beta);
+
+				if(currentScore < beta){
+					beta = currentScore;
+				}
+				if(beta <= alpha) break;
 			}
-			return v;
+			}
+			return currentScore;
 		}
 
 	}
-}
+
