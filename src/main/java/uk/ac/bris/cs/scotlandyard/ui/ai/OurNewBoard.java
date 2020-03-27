@@ -29,11 +29,11 @@ public class OurNewBoard {
 
         return set;
     }
-    
+
     private static Set<Move.SingleMove> makeSingleMoves(GameSetup setup, PlayerInfo mrX, int source, List <PlayerInfo> players) {
         Set<Move.SingleMove> singleMoves = new HashSet<>(); //a set with all possible single moves
 
-        for (int destination : setup.graph.adjacentNodes(mrX.getLocation())) {
+        for (int destination : setup.graph.adjacentNodes(source)) {
             var occupied = false;
 
             //find out if destination is occupied by a detective
@@ -44,14 +44,14 @@ public class OurNewBoard {
             if (occupied) continue; //if occupied skip
 
             //add moves if the player has the required ticket
-            for (ScotlandYard.Transport t : setup.graph.edgeValueOrDefault(mrX.getLocation(), destination, ImmutableSet.of())) {
+            for (ScotlandYard.Transport t : setup.graph.edgeValueOrDefault(source, destination, ImmutableSet.of())) {
                 if (mrX.hasTicket(t.requiredTicket()))
                     singleMoves.add(new Move.SingleMove(mrX.getPiece(), source, t.requiredTicket(), destination));
             }
 
             //add moves to the destination via a Secret ticket if there are any left with the player
             if (mrX.hasTicket(ScotlandYard.Ticket.SECRET))
-                for (ScotlandYard.Transport t : setup.graph.edgeValueOrDefault(mrX.getLocation(), destination, ImmutableSet.of()))
+                for (ScotlandYard.Transport t : setup.graph.edgeValueOrDefault(source, destination, ImmutableSet.of()))
                     singleMoves.add(new Move.SingleMove(mrX.getPiece(), source, ScotlandYard.Ticket.SECRET, destination));
 
         }
@@ -71,7 +71,7 @@ public class OurNewBoard {
 
             for (Move.SingleMove mov2 : b) {
                 if (mov2.ticket == mov.ticket && !mrX.hasAtLeast2(mov.ticket)) continue;
-                Move.DoubleMove ticket = new Move.DoubleMove(mrX.getPiece(), mrX.getLocation(), mov.ticket, mov.destination, mov2.ticket, mov2.destination);
+                Move.DoubleMove ticket = new Move.DoubleMove(mrX.getPiece(), source, mov.ticket, mov.destination, mov2.ticket, mov2.destination);
                 doubleMoves.add(ticket);
             }
 
