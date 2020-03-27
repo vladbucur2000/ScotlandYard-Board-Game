@@ -24,15 +24,13 @@ public class OurNewBoard {
     public Set<Move> getAvailableMoves() {
         Set<Move> set = new HashSet<>();
 
-        set.addAll(makeSingleMoves(setup, mrX, players));
-        if (mrX.hasTicket(ScotlandYard.Ticket.DOUBLE)) set.addAll(makeDoubleMove(setup, mrX, players)); //bugs
+        set.addAll(makeSingleMoves(setup, mrX, mrX.getLocation(), players));
+        if (mrX.hasTicket(ScotlandYard.Ticket.DOUBLE)) set.addAll(makeDoubleMove(setup, mrX, mrX.getLocation(), players)); //bugs
 
         return set;
     }
-
-
-
-    private static Set<Move.SingleMove> makeSingleMoves(GameSetup setup, PlayerInfo mrX, List <PlayerInfo> players) {
+    
+    private static Set<Move.SingleMove> makeSingleMoves(GameSetup setup, PlayerInfo mrX, int source, List <PlayerInfo> players) {
         Set<Move.SingleMove> singleMoves = new HashSet<>(); //a set with all possible single moves
 
         for (int destination : setup.graph.adjacentNodes(mrX.getLocation())) {
@@ -48,27 +46,27 @@ public class OurNewBoard {
             //add moves if the player has the required ticket
             for (ScotlandYard.Transport t : setup.graph.edgeValueOrDefault(mrX.getLocation(), destination, ImmutableSet.of())) {
                 if (mrX.hasTicket(t.requiredTicket()))
-                    singleMoves.add(new Move.SingleMove(mrX.getPiece(), mrX.getLocation(), t.requiredTicket(), destination));
+                    singleMoves.add(new Move.SingleMove(mrX.getPiece(), source, t.requiredTicket(), destination));
             }
 
             //add moves to the destination via a Secret ticket if there are any left with the player
             if (mrX.hasTicket(ScotlandYard.Ticket.SECRET))
                 for (ScotlandYard.Transport t : setup.graph.edgeValueOrDefault(mrX.getLocation(), destination, ImmutableSet.of()))
-                    singleMoves.add(new Move.SingleMove(mrX.getPiece(),mrX.getLocation(), ScotlandYard.Ticket.SECRET, destination));
+                    singleMoves.add(new Move.SingleMove(mrX.getPiece(), source, ScotlandYard.Ticket.SECRET, destination));
 
         }
         return singleMoves;
 
     }
 
-    private static Set<Move.DoubleMove> makeDoubleMove (GameSetup setup, PlayerInfo mrX, List <PlayerInfo> players)  {
+    private static Set<Move.DoubleMove> makeDoubleMove (GameSetup setup, PlayerInfo mrX, int source, List <PlayerInfo> players)  {
 
-        Set<Move.SingleMove> a = makeSingleMoves(setup, mrX, players); //a set with the possible first moves
+        Set<Move.SingleMove> a = makeSingleMoves(setup, mrX, source, players); //a set with the possible first moves
         Set<Move.DoubleMove> doubleMoves = new HashSet<>(); //a set with all the possible double moves
 
         for (Move.SingleMove mov : a) {
             //all the possible second moves using the initial first moves
-            Set<Move.SingleMove> b = makeSingleMoves(setup, mrX, players);
+            Set<Move.SingleMove> b = makeSingleMoves(setup, mrX, mov.destination, players);
 
 
             for (Move.SingleMove mov2 : b) {
