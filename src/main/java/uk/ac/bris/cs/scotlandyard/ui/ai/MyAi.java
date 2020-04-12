@@ -6,9 +6,9 @@ import javax.annotation.Nonnull;
 import uk.ac.bris.cs.scotlandyard.model.*;
 
 public class MyAi implements Ai {
-	public static ScoreFunction sc = new ScoreFunction();
-	public static Move bestMoveuleanu = null;
-	public static int currentScore = 0;
+	static ScoreFunction sc = new ScoreFunction();
+	static Move bestNextMove = null;
+	final static int NO_ANTICIPATED_MOVES = 3;
 
 	@Nonnull
 	@Override
@@ -56,23 +56,21 @@ public class MyAi implements Ai {
 		init.add(mrX);
 		init.addAll(detectives);
 		OurNewBoard newBoard = new OurNewBoard(init, board.getSetup());
-		Move bestMove = null;
+
 		int bestMoveScore = minimaxAlphaBeta(0, true, newBoard, mrX, detectives, board, Integer.MIN_VALUE, Integer.MAX_VALUE);
-		//ScoreFunction scoreFunction = new ScoreFunction();
-		//scoreFunction.scorer();
-		// returns a random move, replace with your own implementation
-		System.out.println("CEL MAI TARE DIN PARCARE : " + bestMoveScore);
-		return bestMoveuleanu;
+
+	//	System.out.println("CEL MAI TARE DIN PARCARE : " + bestMoveScore);
+		return bestNextMove;
 		//return moves.get(new Random().nextInt(moves.size()));
 	}
 
 
 	static int minimaxAlphaBeta(int depth, boolean maximize, OurNewBoard ourBoard, PlayerInfo mrX, List<PlayerInfo> detectives, Board board, int alpha, int beta) {
+		int currentScore = 0;
 
-		if (depth == 3) {
-			int scorulina = sc.scorer(board.getSetup().graph, ourBoard.players, mrX.getLocation());
-			System.out.println(scorulina);
-			return scorulina;
+		if (depth == NO_ANTICIPATED_MOVES) {
+			int score = sc.scorer(board.getSetup().graph, ourBoard.players, mrX.getLocation());
+			return score;
 		}
 
 		if (maximize) {
@@ -80,7 +78,7 @@ public class MyAi implements Ai {
 			for (Move nextMove : ourBoard.getAvailableMoves()) {
 				PlayerInfo newMrX = new PlayerInfo(mrX.giveTicketBoard(), mrX.getPiece(), mrX.getLocation());
 
-				int destination = saTraiascaMata(nextMove);
+				int destination = extractDestination(nextMove);
 
 				newMrX.changeLocation(destination);
 				newMrX.modifyTickets(nextMove.tickets(), -1);
@@ -95,7 +93,7 @@ public class MyAi implements Ai {
 				v = Integer.max(v, currentScore);
 				if (v > alpha) {
 					alpha = v;
-					if(depth == 0) bestMoveuleanu = nextMove;
+					if(depth == 0) bestNextMove = nextMove;
 				}
 				if (beta <= alpha) break;
 			}
@@ -104,10 +102,11 @@ public class MyAi implements Ai {
 		}
 		else {
 			int v = Integer.MAX_VALUE;
+
 			for (Move nextMove : ourBoard.getAvailableMoves()) {
 				PlayerInfo newMrX = new PlayerInfo(mrX.giveTicketBoard(), mrX.getPiece(), mrX.getLocation());
 
-				int destination = saTraiascaMata(nextMove);
+				int destination = extractDestination(nextMove);
 
 				newMrX.changeLocation(destination);
 				newMrX.modifyTickets(nextMove.tickets(), -1);
@@ -119,9 +118,11 @@ public class MyAi implements Ai {
 				OurNewBoard newBoard = new OurNewBoard(init, board.getSetup());
 				currentScore = minimaxAlphaBeta(depth + 1, true, newBoard, newMrX, detectives, board, alpha, beta);
 				v = Integer.min(v, currentScore);
+
 				if (v < beta) {
 					beta = v;
 				}
+
 				if (beta <= alpha) break;
 			}
 			return v;
@@ -129,7 +130,7 @@ public class MyAi implements Ai {
 
 	}
 
-	static int saTraiascaMata(Move nextMove) {
+	static int extractDestination(Move nextMove) {
 
 		List<Integer> Destination = nextMove.visit(new Move.Visitor<List<Integer>>() {
 			@Override public List<Integer> visit(Move.SingleMove singleMove) {

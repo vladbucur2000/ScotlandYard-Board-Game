@@ -9,9 +9,11 @@ import uk.ac.bris.cs.scotlandyard.model.Ai;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.model.Move;
 
-public class MyAiDetectives implements Ai {
+public class SmartDetectivesAi implements Ai {
 
-    @Nonnull @Override public String name() { return "myCraneDetectives"; }
+    @Nonnull @Override public String name() {
+        return "smartDetectives";
+    }
 
     @Nonnull @Override public Move pickMove(
             @Nonnull Board board,
