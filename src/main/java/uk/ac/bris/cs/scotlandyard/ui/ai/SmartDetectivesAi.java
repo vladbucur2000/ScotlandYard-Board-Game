@@ -12,7 +12,7 @@ import uk.ac.bris.cs.scotlandyard.model.Move;
 public class SmartDetectivesAi implements Ai {
 
     @Nonnull @Override public String name() {
-        return "smartDetectives";
+        return "smartDetectivesAi";
     }
 
     @Nonnull @Override public Move pickMove(

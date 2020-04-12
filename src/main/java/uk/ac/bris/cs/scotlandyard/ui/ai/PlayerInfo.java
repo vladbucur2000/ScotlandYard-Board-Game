@@ -21,15 +21,9 @@ public class PlayerInfo {
         hm.put(ScotlandYard.Ticket.SECRET , tickets.getCount(ScotlandYard.Ticket.SECRET));
         hm.put(ScotlandYard.Ticket.DOUBLE , tickets.getCount(ScotlandYard.Ticket.DOUBLE));
         this.tickets = hm;
-        this.colour   = colour;
+        this.colour = colour;
         this.location = location;
     }
-
-    public PlayerInfo clone(){
-        return new PlayerInfo( this.ticketBoards, this.colour, this.location);
-    }
-
-
 
     public Piece getPiece() {
         return colour;

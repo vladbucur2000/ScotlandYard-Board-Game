@@ -11,7 +11,7 @@ class TestDijkstra
     private static void testing (int[] x, int[] y, int size) {
 
         for (int i = 0; i <= size; ++i)
-            assert x[i] == y[i] : "AI GRESIT PATROANE";
+            assert x[i] == y[i] : "Dijkstra algorithm - wrong answer";
     }
 
     public static void main( String args[] )

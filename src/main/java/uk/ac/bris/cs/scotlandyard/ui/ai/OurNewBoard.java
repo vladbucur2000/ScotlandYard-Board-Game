@@ -10,8 +10,8 @@ import java.util.*;
 public class OurNewBoard {
 
     public List <PlayerInfo> players;
-    PlayerInfo mrX;
-    ImmutableValueGraph<Integer, ImmutableSet<ScotlandYard.Transport>> graph;
+    private PlayerInfo mrX;
+    private ImmutableValueGraph<Integer, ImmutableSet<ScotlandYard.Transport>> graph;
     private GameSetup setup;
 
     OurNewBoard(List <PlayerInfo> players, GameSetup setup) {

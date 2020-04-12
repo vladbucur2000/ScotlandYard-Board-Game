@@ -22,13 +22,15 @@ public class MyAi implements Ai {
 			@Nonnull Board board,
 			@Nonnull AtomicBoolean terminate) {
 
-		PlayerInfo mrX = null;
+		//extracting mrX initial location using the current board
 		var moves = board.getAvailableMoves().asList();
 		int initialLocationMRX = moves.iterator().next().source();
 
+		//extracting mrX and a list of detectives -> instances of class PlayerInfo
+		PlayerInfo mrX = null;
 		List<PlayerInfo> detectives = new ArrayList<>();
-		for (Piece player : board.getPlayers()) {
 
+		for (Piece player : board.getPlayers()) {
 			if (player.isMrX()) {
 				mrX = new PlayerInfo(board.getPlayerTickets(player).get(), player, initialLocationMRX);
 				continue;
@@ -52,16 +54,15 @@ public class MyAi implements Ai {
 			}
 		}
 
-		List<PlayerInfo> init = new ArrayList<>();
+		List<PlayerInfo> init = new ArrayList<>(); //a list with all the players
 		init.add(mrX);
 		init.addAll(detectives);
-		OurNewBoard newBoard = new OurNewBoard(init, board.getSetup());
+
+		OurNewBoard newBoard = new OurNewBoard(init, board.getSetup()); //a board used for anticipating possible next moves
 
 		int bestMoveScore = minimaxAlphaBeta(0, true, newBoard, mrX, detectives, board, Integer.MIN_VALUE, Integer.MAX_VALUE);
-
-	//	System.out.println("CEL MAI TARE DIN PARCARE : " + bestMoveScore);
+		//	System.out.println("CEL MAI TARE DIN PARCARE : " + bestMoveScore);
 		return bestNextMove;
-		//return moves.get(new Random().nextInt(moves.size()));
 	}
 
 
@@ -69,8 +70,7 @@ public class MyAi implements Ai {
 		int currentScore = 0;
 
 		if (depth == NO_ANTICIPATED_MOVES) {
-			int score = sc.scorer(board.getSetup().graph, ourBoard.players, mrX.getLocation());
-			return score;
+			return sc.scorer(board.getSetup().graph, ourBoard.players, mrX.getLocation());
 		}
 
 		if (maximize) {
@@ -91,10 +91,12 @@ public class MyAi implements Ai {
 
 				currentScore = minimaxAlphaBeta(depth + 1, false, newBoard, newMrX, detectives, board, alpha, beta);
 				v = Integer.max(v, currentScore);
+
 				if (v > alpha) {
 					alpha = v;
 					if(depth == 0) bestNextMove = nextMove;
 				}
+
 				if (beta <= alpha) break;
 			}
 
@@ -160,11 +162,11 @@ public class MyAi implements Ai {
 		}
 
 		int finalDestination = -1; // not the movie
+
 		if (Destination.size() > 1) finalDestination = destination2;
-		else finalDestination = destination;
+			else finalDestination = destination;
 
 		return finalDestination;
-
 	}
 
 }
