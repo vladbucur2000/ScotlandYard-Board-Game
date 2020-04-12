@@ -1,8 +1,6 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai;
 
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nonnull;
 import uk.ac.bris.cs.scotlandyard.model.*;
@@ -94,15 +92,15 @@ public class MyAi implements Ai {
 				OurNewBoard newBoard = new OurNewBoard(init, board.getSetup());
 
 				currentScore = minimaxAlphaBeta(depth + 1, false, newBoard, newMrX, detectives, board, alpha, beta);
-
-				if (currentScore > alpha) {
-					alpha = currentScore;
-					bestMoveuleanu = nextMove;
+				v = Integer.max(v, currentScore);
+				if (v > alpha) {
+					alpha = v;
+					if(depth == 0) bestMoveuleanu = nextMove;
 				}
 				if (beta <= alpha) break;
 			}
 
-			return currentScore;
+			return v;
 		}
 		else {
 			int v = Integer.MAX_VALUE;
@@ -119,15 +117,16 @@ public class MyAi implements Ai {
 				init.addAll(detectives);
 
 				OurNewBoard newBoard = new OurNewBoard(init, board.getSetup());
-				currentScore = minimaxAlphaBeta(depth + 1, false, newBoard, newMrX, detectives, board, alpha, beta);
-
-				if (currentScore < beta) {
-					beta = currentScore;
+				currentScore = minimaxAlphaBeta(depth + 1, true, newBoard, newMrX, detectives, board, alpha, beta);
+				v = Integer.min(v, currentScore);
+				if (v < beta) {
+					beta = v;
 				}
 				if (beta <= alpha) break;
 			}
+			return v;
 		}
-		return currentScore;
+
 	}
 
 	static int saTraiascaMata(Move nextMove) {
