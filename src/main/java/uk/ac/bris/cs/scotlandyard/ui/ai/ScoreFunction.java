@@ -13,8 +13,8 @@ public class ScoreFunction {
         int stationScore = 0;
         int detectiveScore = 0;
         int score = 0;
-        PlayerInfo mrX = players.get(0);
         int danger = 0;
+        PlayerInfo mrX = players.get(0);
 
 
         /** 1st VARIABLE */
@@ -25,7 +25,9 @@ public class ScoreFunction {
             if (player == mrX) continue;
 
             int movementRatio = 1000;
-            if(distances[player.getLocation()] <= 4) danger = Integer.MIN_VALUE;
+            if(distances[player.getLocation()] == 0) return -9999999;
+            if(distances[player.getLocation()] == 1) danger = -50000;
+            if(distances[player.getLocation()] == 2) danger = -20000;
             if (distances[player.getLocation()] < player.getEquivalenceTAXI()) movementRatio = distances[player.getLocation()] / player.totalTickets();
             detectiveScore += movementRatio;
         }
@@ -47,10 +49,11 @@ public class ScoreFunction {
                     default:
                         stationScore += 0;
                 }
+        if(stationScore == 0) return -9999999;
 
 
         ////////////////////////////////////////////
-        score = danger + stationScore + detectiveScore / (players.size() - 1);
+        score = danger + stationScore + detectiveScore / (players.size() - 1) * 50;
 ///////////////////////////////////////////////////////
 
         return score;

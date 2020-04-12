@@ -8,8 +8,7 @@ import uk.ac.bris.cs.scotlandyard.model.*;
 public class TheCraneAi implements Ai {
 	static ScoreFunction sc = new ScoreFunction();
 	static Move bestNextMove = null;
-	final static int NO_ANTICIPATED_MOVES = 3;
-
+	final static int NO_ANTICIPATED_MOVES = 1;
 	@Nonnull
 	@Override
 	public String name() {
@@ -21,11 +20,12 @@ public class TheCraneAi implements Ai {
 	public Move pickMove(
 			@Nonnull Board board,
 			@Nonnull AtomicBoolean terminate) {
-
+		System.out.println("NEBUN      " + board.getMrXTravelLog().size());
 		//extracting mrX initial location using the current board
 		var moves = board.getAvailableMoves().asList();
 		int initialLocationMRX = moves.iterator().next().source();
 
+		//Move bestNextMove = moves.get(new Random().nextInt(moves.size()));
 		//extracting mrX and a list of detectives -> instances of class PlayerInfo
 		PlayerInfo mrX = null;
 		List<PlayerInfo> detectives = new ArrayList<>();
@@ -61,7 +61,7 @@ public class TheCraneAi implements Ai {
 		OurNewBoard newBoard = new OurNewBoard(init, board.getSetup()); //a board used for anticipating possible next moves
 
 		int bestMoveScore = minimaxAlphaBeta(0, true, newBoard, mrX, detectives, board, Integer.MIN_VALUE, Integer.MAX_VALUE);
-		//	System.out.println("CEL MAI TARE DIN PARCARE : " + bestMoveScore);
+			System.out.println("CEL MAI TARE DIN PARCARE : " + bestMoveScore);
 		return bestNextMove;
 	}
 
@@ -94,13 +94,16 @@ public class TheCraneAi implements Ai {
 
 				if (v > alpha) {
 					alpha = v;
-					if(depth == 0) bestNextMove = nextMove;
+					if(depth == 0) {
+						bestNextMove = nextMove;
+						System.out.println("bestmove sc"+v);
+					}
 				}
 
 				if (beta <= alpha) break;
 			}
 
-			return v;
+			return alpha;
 		}
 		else {
 			int v = Integer.MAX_VALUE;
