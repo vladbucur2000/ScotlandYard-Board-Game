@@ -8,11 +8,11 @@ import uk.ac.bris.cs.scotlandyard.model.*;
 public class TheCraneAi implements Ai {
 	static ScoreFunction sc = new ScoreFunction();
 	static Move bestNextMove = null;
-	final static int NO_ANTICIPATED_MOVES = 1;
+	final static int NO_ANTICIPATED_MOVES = 4;
 	@Nonnull
 	@Override
 	public String name() {
-		return "theCrane";
+		return "TheCraneAi";
 	}
 
 	@Nonnull
@@ -20,7 +20,7 @@ public class TheCraneAi implements Ai {
 	public Move pickMove(
 			@Nonnull Board board,
 			@Nonnull AtomicBoolean terminate) {
-		System.out.println("NEBUN      " + board.getMrXTravelLog().size());
+		//System.out.println("NEBUN      " + board.getMrXTravelLog().size());
 		//extracting mrX initial location using the current board
 		var moves = board.getAvailableMoves().asList();
 		int initialLocationMRX = moves.iterator().next().source();
@@ -61,7 +61,7 @@ public class TheCraneAi implements Ai {
 		OurNewBoard newBoard = new OurNewBoard(init, board.getSetup()); //a board used for anticipating possible next moves
 
 		int bestMoveScore = minimaxAlphaBeta(0, true, newBoard, mrX, detectives, board, Integer.MIN_VALUE, Integer.MAX_VALUE);
-			System.out.println("CEL MAI TARE DIN PARCARE : " + bestMoveScore);
+			//System.out.println("CEL MAI TARE DIN PARCARE : " + bestMoveScore);
 		return bestNextMove;
 	}
 
@@ -96,7 +96,7 @@ public class TheCraneAi implements Ai {
 					alpha = v;
 					if(depth == 0) {
 						bestNextMove = nextMove;
-						System.out.println("bestmove sc"+v);
+						//System.out.println("bestmove sc"+v);
 					}
 				}
 
@@ -135,7 +135,7 @@ public class TheCraneAi implements Ai {
 
 	}
 
-	static int extractDestination(Move nextMove) {
+	public static int extractDestination(Move nextMove) {
 
 		List<Integer> Destination = nextMove.visit(new Move.Visitor<List<Integer>>() {
 			@Override public List<Integer> visit(Move.SingleMove singleMove) {
