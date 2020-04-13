@@ -8,6 +8,7 @@ import uk.ac.bris.cs.scotlandyard.model.*;
 public class TheCraneAi implements Ai {
 	static ScoreFunction sc = new ScoreFunction();
 	static Move bestNextMove = null;
+	static int previousDestination = -1;
 	final static int NO_ANTICIPATED_MOVES = 4;
 	@Nonnull
 	@Override
@@ -24,6 +25,9 @@ public class TheCraneAi implements Ai {
 		//extracting mrX initial location using the current board
 		var moves = board.getAvailableMoves().asList();
 		int initialLocationMRX = moves.iterator().next().source();
+
+
+		previousDestination = initialLocationMRX;
 
 		//Move bestNextMove = moves.get(new Random().nextInt(moves.size()));
 		//extracting mrX and a list of detectives -> instances of class PlayerInfo
@@ -70,7 +74,7 @@ public class TheCraneAi implements Ai {
 		int currentScore = 0;
 
 		if (depth == NO_ANTICIPATED_MOVES) {
-			return sc.scorer(board.getSetup().graph, ourBoard.players, mrX.getLocation());
+			return sc.scorer(board.getSetup().graph, ourBoard.players, mrX.getLocation(), previousDestination);
 		}
 
 		if (maximize) {
