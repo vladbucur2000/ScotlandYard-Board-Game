@@ -6,10 +6,12 @@ import javax.annotation.Nonnull;
 import uk.ac.bris.cs.scotlandyard.model.*;
 
 public class TheCraneAi implements Ai {
-	static ScoreFunction sc = new ScoreFunction();
-	static Move bestNextMove = null;
-	static int previousDestination = -1;
-	final static int NO_ANTICIPATED_MOVES = 4;
+	static private ScoreFunction sc = new ScoreFunction();
+	private Move bestNextMove = null;
+	private int previousDestination = -1;
+	private long END_TIME;
+	private int NO_ANTICIPATED_MOVES;
+
 	@Nonnull
 	@Override
 	public String name() {
@@ -21,11 +23,16 @@ public class TheCraneAi implements Ai {
 	public Move pickMove(
 			@Nonnull Board board,
 			@Nonnull AtomicBoolean terminate) {
-		//System.out.println("NEBUN      " + board.getMrXTravelLog().size());
+
+		//used to know when to stop minimax
+		END_TIME = System.currentTimeMillis() + 20000/4;
+
+		//what is the maximum number of anticipated moves I can count
+		NO_ANTICIPATED_MOVES = board.getSetup().rounds.size() - board.getMrXTravelLog().size();
+
 		//extracting mrX initial location using the current board
 		var moves = board.getAvailableMoves().asList();
 		int initialLocationMRX = moves.iterator().next().source();
-
 
 		previousDestination = initialLocationMRX;
 
@@ -61,25 +68,29 @@ public class TheCraneAi implements Ai {
 		List<PlayerInfo> init = new ArrayList<>(); //a list with all the players
 		init.add(mrX);
 		init.addAll(detectives);
-
-		OurNewBoard newBoard = new OurNewBoard(init, board.getSetup()); //a board used for anticipating possible next moves
-
+		OurNewBoard newBoard = new OurNewBoard(init, board); //a board used for anticipating possible next moves
 		int bestMoveScore = minimaxAlphaBeta(0, true, newBoard, mrX, detectives, board, Integer.MIN_VALUE, Integer.MAX_VALUE);
-			//System.out.println("CEL MAI TARE DIN PARCARE : " + bestMoveScore);
+
 		return bestNextMove;
 	}
 
 
-	static int minimaxAlphaBeta(int depth, boolean maximize, OurNewBoard ourBoard, PlayerInfo mrX, List<PlayerInfo> detectives, Board board, int alpha, int beta) {
+	private int minimaxAlphaBeta(int depth, boolean maximize, OurNewBoard ourBoard, PlayerInfo mrX, List<PlayerInfo> detectives, Board board, int alpha, int beta) {
 		int currentScore = 0;
 
-		if (depth == NO_ANTICIPATED_MOVES) {
+		if (System.currentTimeMillis() > END_TIME) { // if there is no time left
+			return sc.scorer(board.getSetup().graph, ourBoard.players, mrX.getLocation(), previousDestination);
+		}
+
+		if (depth == NO_ANTICIPATED_MOVES) { // if I anticipated enough moves
 			return sc.scorer(board.getSetup().graph, ourBoard.players, mrX.getLocation(), previousDestination);
 		}
 
 		if (maximize) {
 			int v = Integer.MIN_VALUE;
+
 			for (Move nextMove : ourBoard.getAvailableMoves()) {
+				//mrX after this "nextMove"
 				PlayerInfo newMrX = new PlayerInfo(mrX.giveTicketBoard(), mrX.getPiece(), mrX.getLocation());
 
 				int destination = extractDestination(nextMove);
@@ -91,16 +102,16 @@ public class TheCraneAi implements Ai {
 				init.add(newMrX);
 				init.addAll(detectives);
 
-				OurNewBoard newBoard = new OurNewBoard(init, board.getSetup());
+				OurNewBoard newBoard = new OurNewBoard(init, board);
 
 				currentScore = minimaxAlphaBeta(depth + 1, false, newBoard, newMrX, detectives, board, alpha, beta);
+
 				v = Integer.max(v, currentScore);
 
 				if (v > alpha) {
 					alpha = v;
-					if(depth == 0) {
+					if (depth == 0) {
 						bestNextMove = nextMove;
-						//System.out.println("bestmove sc"+v);
 					}
 				}
 
@@ -124,7 +135,7 @@ public class TheCraneAi implements Ai {
 				init.add(newMrX);
 				init.addAll(detectives);
 
-				OurNewBoard newBoard = new OurNewBoard(init, board.getSetup());
+				OurNewBoard newBoard = new OurNewBoard(init, board);
 				currentScore = minimaxAlphaBeta(depth + 1, true, newBoard, newMrX, detectives, board, alpha, beta);
 				v = Integer.min(v, currentScore);
 

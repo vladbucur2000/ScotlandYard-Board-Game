@@ -10,14 +10,14 @@ import java.util.*;
 public class ScoreFunction {
 
     public int scorer(ImmutableValueGraph < Integer , ImmutableSet<ScotlandYard.Transport>> graph, List<PlayerInfo> players, int location, int previousDestination) {
-        int stationScore = 0;
-        int detectiveScore = 0;
-        int score = 0;
-        int danger = 0;
-        PlayerInfo mrX = players.get(0);
 
+        int stationScore = 0, detectiveScore = 0, score = 0, danger = 0;
+        PlayerInfo mrX = players.get(0); //mrX is the first player in the list
 
         /** 1st VARIABLE */
+        //how far are the detectives ?
+        //how many steps should they move per turn to catch me?
+        //do they have enough tickets? are they too close?
         OurDijkstra dijkstra = new OurDijkstra();
         int[] distances = dijkstra.compute(graph, location);
 
@@ -28,40 +28,38 @@ public class ScoreFunction {
 
             if (distances[player.getLocation()] == 0) return -9999999;
 
-            if (distances[player.getLocation()] == 1) danger += -50000;
-                else if (distances[player.getLocation()] == 2) danger += -20000;
+            if (distances[player.getLocation()] == 1) danger += -50000; //too close
+            //    else if (distances[player.getLocation()] == 2) danger += -20000;
 
-            if (distances[player.getLocation()] < player.getEquivalenceTAXI()) movementRatio = distances[player.getLocation()] / player.totalTickets();
+            if (distances[player.getLocation()] < player.getEquivalenceTAXI())
+                movementRatio = distances[player.getLocation()] / player.totalTickets();
+
             detectiveScore += movementRatio;
         }
 
 
         /** 2nd VARIABLE */
-
+        //To not be caught, I need to choose the node which has more stations
         for (EndpointPair<Integer> incidentEdge : graph.incidentEdges(location))
             for (var i : graph.edgeValueOrDefault(incidentEdge, null))
-                if (mrX.hasTicket(i.requiredTicket()) || mrX.hasTicket(ScotlandYard.Ticket.SECRET)) switch (i) {
-                    case TAXI:
-                        stationScore += 1;
-                    case BUS:
-                        stationScore += 4;
-                    case UNDERGROUND:
-                        stationScore += 18;
-                    case FERRY:
-                        stationScore += 115;
-                    default:
-                        stationScore += 0;
+                if (mrX.hasTicket(i.requiredTicket()) || mrX.hasTicket(ScotlandYard.Ticket.SECRET)) {
+                    switch (i) {
+                        case TAXI: stationScore += 1; break;
+                        case BUS: stationScore += 4; break;
+                        case UNDERGROUND: stationScore += 18; break;
+                        case FERRY: stationScore += 115; break;
+                    }
                 }
+
         if (stationScore == 0) return -9999999;
 
         /** 3rd VARIABLE */
+        //if I reveal my location the detectives will come after me so I rather not be close to my previous location
         int farAway = distances[previousDestination];
 
-        ////////////////////////////////////////////
-        score = danger*10000 + stationScore * 80 +  detectiveScore * 500 + farAway * 1000;
-///////////////////////////////////////////////////////
+        /** FINAL SCORE */
+        score = danger * 10000 + stationScore * 80 +  detectiveScore * 500 + farAway * 1000;
 
         return score;
-
     }
 }

@@ -12,7 +12,8 @@ public class PlayerInfo {
     private final Piece colour;
     private int location;
 
-    public PlayerInfo (Board.TicketBoard tickets, Piece colour, int location ) {
+    PlayerInfo (Board.TicketBoard tickets, Piece colour, int location) {
+        //storing the tickets in a map
         this.ticketBoards = tickets;
         Map<ScotlandYard.Ticket, Integer> hm = new HashMap<ScotlandYard.Ticket, Integer>();
         hm.put(ScotlandYard.Ticket.TAXI , tickets.getCount(ScotlandYard.Ticket.TAXI));
@@ -20,6 +21,7 @@ public class PlayerInfo {
         hm.put(ScotlandYard.Ticket.UNDERGROUND , tickets.getCount(ScotlandYard.Ticket.UNDERGROUND));
         hm.put(ScotlandYard.Ticket.SECRET , tickets.getCount(ScotlandYard.Ticket.SECRET));
         hm.put(ScotlandYard.Ticket.DOUBLE , tickets.getCount(ScotlandYard.Ticket.DOUBLE));
+
         this.tickets = hm;
         this.colour = colour;
         this.location = location;
@@ -29,7 +31,7 @@ public class PlayerInfo {
         return colour;
     }
 
-    public Board.TicketBoard giveTicketBoard(){
+    public Board.TicketBoard giveTicketBoard() {
         return ticketBoards;
     }
 
@@ -40,9 +42,7 @@ public class PlayerInfo {
     public void changeLocation(int location) {
         this.location = location;
     }
-    public Map<ScotlandYard.Ticket, Integer> getTickets() {
-        return tickets;
-    }
+
     public void modifyTickets(Iterable<ScotlandYard.Ticket> t, int x){
         for (ScotlandYard.Ticket ticket : t) {
             int number = tickets.remove(ticket);
@@ -50,27 +50,27 @@ public class PlayerInfo {
         }
     }
 
-    public Boolean hasTicket(ScotlandYard.Ticket ticket) {
-        if( tickets.get(ticket) == 0 ) return false;
-        return true;
+    public boolean hasTicket(ScotlandYard.Ticket ticket) {
+        return tickets.get(ticket) != 0;
     }
 
+    //method for double moves made using the same ticket
     public boolean hasAtLeast2 (ScotlandYard.Ticket ticket) {
-        if (tickets.get(ticket) >= 2) return true;
-        return false;
+        return tickets.get(ticket) >= 2;
     }
 
-    public int getEquivalenceTAXI(){
+    //some transportations are faster than others
+    public int getEquivalenceTAXI() {
         int score = 0;
-        for(Map.Entry<ScotlandYard.Ticket, Integer> element : tickets.entrySet()) {
+
+        for (Map.Entry<ScotlandYard.Ticket, Integer> element : tickets.entrySet()) {
             ScotlandYard.Ticket ticket = element.getKey();
             Integer noTickets = element.getValue();
 
             switch (ticket) {
-                case TAXI: score += noTickets;
-                case BUS: score += (4 * noTickets);
-                case UNDERGROUND: score += (18 * noTickets);
-                default : break;
+                case TAXI: score += noTickets; break;
+                case BUS: score += (4 * noTickets); break; // we consider the bus 4 times faster
+                case UNDERGROUND: score += (18 * noTickets); break; // we consider the underground 18 times faster
             }
         }
 
@@ -79,6 +79,7 @@ public class PlayerInfo {
 
     public int totalTickets() {
         int ans = 0;
+
         for (Map.Entry<ScotlandYard.Ticket, Integer> element : tickets.entrySet()) {
             Integer noTickets = element.getValue();
             ans += noTickets;
@@ -86,6 +87,5 @@ public class PlayerInfo {
 
         return ans;
     }
-
 
 }

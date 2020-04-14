@@ -13,19 +13,24 @@ public class OurNewBoard {
     private PlayerInfo mrX;
     private ImmutableValueGraph<Integer, ImmutableSet<ScotlandYard.Transport>> graph;
     private GameSetup setup;
+    private Board board;
 
-    OurNewBoard(List <PlayerInfo> players, GameSetup setup) {
+    OurNewBoard(List <PlayerInfo> players, Board board) {
+        this.mrX = players.iterator().next(); //mrX is the first player in the list
         this.players = players;
-        this.mrX = players.iterator().next();
-        this.graph = setup.graph;
-        this.setup = setup;
+        this.board = board;
+        this.setup = board.getSetup();
+        this.graph = board.getSetup().graph;
     }
 
-    public Set<Move> getAvailableMoves() {
+    public Set<Move> getAvailableMoves() { //a similar function to the one in the cw-model that works on PlayerInfo class
         Set<Move> set = new HashSet<>();
 
         set.addAll(makeSingleMoves(setup, mrX, mrX.getLocation(), players));
-        if (mrX.hasTicket(ScotlandYard.Ticket.DOUBLE)) set.addAll(makeDoubleMove(setup, mrX, mrX.getLocation(), players)); //bugs
+
+        //double move only if it has a ticket +++ number of rounds remaining <= 2
+        if (mrX.hasTicket(ScotlandYard.Ticket.DOUBLE) && board.getMrXTravelLog().size() <= setup.rounds.size() - 2)
+            set.addAll(makeDoubleMove(setup, mrX, mrX.getLocation(), players));
 
         return set;
     }

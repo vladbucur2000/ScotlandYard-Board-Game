@@ -6,7 +6,7 @@ import uk.ac.bris.cs.scotlandyard.model.ScotlandYard;
 
 import java.util.*;
 
-public class OurDijkstra {
+public class OurDijkstra { //it is actually a BFS because the weight on an edge is 1
 
     public int[] compute(ImmutableValueGraph<Integer, ImmutableSet<ScotlandYard.Transport>> graph, int source) {
 
@@ -26,6 +26,7 @@ public class OurDijkstra {
         Queue <Integer> queue = new LinkedList<>();
         queue.add(source);
 
+        //BFS 
         while (!queue.isEmpty()) {
             int current = queue.peek();
 
