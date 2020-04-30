@@ -25,7 +25,7 @@ public class TheCraneAi implements Ai {
 			@Nonnull AtomicBoolean terminate) {
 
 		//used to know when to stop minimax
-		END_TIME = System.currentTimeMillis() + 25000/7;
+		END_TIME = System.currentTimeMillis() + 25000;
 
 		//what is the maximum number of anticipated moves I can count
 		NO_ANTICIPATED_MOVES = board.getSetup().rounds.size() - board.getMrXTravelLog().size();
