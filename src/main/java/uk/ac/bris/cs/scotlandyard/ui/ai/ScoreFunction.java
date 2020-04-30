@@ -29,7 +29,6 @@ public class ScoreFunction {
             if (distances[player.getLocation()] == 0) return -9999999;
 
             if (distances[player.getLocation()] == 1) danger += -50000; //too close
-            //    else if (distances[player.getLocation()] == 2) danger += -20000;
 
             if (distances[player.getLocation()] < player.getEquivalenceTAXI())
                 movementRatio = distances[player.getLocation()] / player.totalTickets();
